@@ -17,7 +17,7 @@ matrix:
   allow_failures:
     - julia: nightly
   fast_finish: true
-before_script:
+script:
   - julia -e 'using Conda; Conda.add("matplotlib"); Conda.add("cartopy"); Conda.add("pyhdf",channel="conda-forge");'
 notifications:
   email: false
