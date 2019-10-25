@@ -11,8 +11,6 @@ module ClimateEasy
 ## Modules Used
 
 using Pkg, Dates, DelimitedFiles, Printf
-
-ENV["PYTHON"] = ""; Pkg.build("PyCall")
 using Conda, PyCall, PyPlot
 
 ## Adding relevant Python Functions
