@@ -1,40 +1,23 @@
 # Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
 
+julia:
+  - 1.0
+  - nightly
+
 jobs:
   include:
     - os: osx
-      julia: 1.0
-    - os: osx
-      julia: nightly
     - os: linux
-      julia: 1.0
       env: PYTHON=python
-      addons:
-        apt:
-          packages: python-matplotlib
     - os: linux
-      julia: nightly
       env: PYTHON=python3
-      addons:
-        apt:
-          packages: python3-matplotlib
-    - os: linux
-      julia: 1.0
-      env: PYTHON=python
-      addons:
-        apt:
-          packages: python-matplotlib
-    - os: linux
-      julia: nightly
-      env: PYTHON=python3
-      addons:
-        apt:
-          packages: python3-matplotlib
 
 matrix:
   allow_failures:
     - julia: nightly
   fast_finish: true
+before_script:
+  - julia -e 'using Conda; Conda.add("matplotlib"); Conda.add("cartopy"); Conda.add("pyhdf",channel="conda-forge");'
 notifications:
   email: false
