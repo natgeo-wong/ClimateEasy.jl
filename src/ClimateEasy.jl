@@ -9,9 +9,18 @@ module ClimateEasy
 #   - Plotting on maps (requires CartoPy in conda package manager)
 
 ## Modules Used
-using Dates, DelimitedFiles, Printf
+
+using Pkg, Dates, DelimitedFiles, Printf
+
+ENV["PYTHON"] = ""; Pkg.build("PyCall")
 using Conda, PyCall, PyPlot
 
+## Adding relevant Python Functions
+Conda.add("matplotlib");
+Conda.add("cartopy");
+Conda.add("pyhdf",channel="conda-forge")
+
+## Exporting functions
 export
        yr2str, mo2str, dy2str, hr2str, mi2str, yrmo2str, ymd2str, ymdhm2str,
        yrmo2dir, ymd2dir, yrdy2dir,
