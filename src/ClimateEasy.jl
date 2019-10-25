@@ -9,7 +9,10 @@ module ClimateEasy
 #   - Plotting on maps (requires CartoPy in conda package manager)
 
 ## Modules Used
-using Dates, DelimitedFiles, Printf
+
+using Pkg, Dates, DelimitedFiles, Printf
+
+ENV["PYTHON"] = ""; Pkg.build("PyCall")
 using Conda, PyCall, PyPlot
 
 ## Adding relevant Python Functions
