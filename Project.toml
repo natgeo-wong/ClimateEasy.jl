@@ -13,9 +13,9 @@ PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
 
 [compat]
 julia = "1"
-Conda = "≥ 1.0"
-PyCall = "≥ 1.90.0"
-PyPlot = "≥ 2.8"
+Conda = "1.0"
+PyCall = "1.90"
+PyPlot = "2.8"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
