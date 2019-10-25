@@ -4,18 +4,26 @@ language: julia
 jobs:
   include:
     - os: osx
+      julia: 1.0
     - os: linux
+      julia: 1.0
       env: PYTHON=python
     - os: linux
+      julia: 1.0
+      env: PYTHON=python3
+    - os: osx
+      julia: nightly
+    - os: linux
+      julia: nightly
+      env: PYTHON=python
+    - os: linux
+      julia: nightly
       env: PYTHON=python3
 
 matrix:
-  julia:
-    - 1.0
-    - nightly
   allow_failures:
     - julia: nightly
   fast_finish: true
-  
+
 notifications:
   email: false
