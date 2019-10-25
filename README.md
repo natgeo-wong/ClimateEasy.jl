@@ -7,14 +7,16 @@ of coding in climate research.  It currently has the following functionalities:
 * Extraction of data from HDF4 legacy format
 * Mapping of gridded data using Julia's inbuilt Python functionalities
 
-The ClimateEasy.jl package requires the following Julia dependencies:
-* Dates, DelimitedFiles
-* Memento, Printf
+I will be adding Documentation to this later.
+
+Currently, the ClimateEasy.jl package requires the following Julia dependencies:
+* Dates, DelimitedFiles, Printf
 * Conda, PyCall, PyPlot
 
 The ClimateEasy.jl package requires the following Python dependencies:
 * Cartopy
 * pyhdf
+
 These Python dependencies can be installed using Conda.add("pkg_name")
 
 Author(s):
