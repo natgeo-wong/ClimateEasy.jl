@@ -13,11 +13,13 @@ using Pkg, Dates, DelimitedFiles, Printf
 using PyCall, PyPlot
 
 ## Adding relevant Python Functions
+const mpl   = PyNULL()
 const plt   = PyNULL()
 const ccrs  = PyNULL()
 const pyhdf = PyNULL()
 
 function __init__()
+    copy!(mpl,pyimport_conda("matplotlib","matplotlib"))
     copy!(plt,pyimport_conda("matplotlib.pyplot","matplotlib.pyplot"))
     copy!(ccrs,pyimport_conda("cartopy","cartopy"))
     copy!(pyhdf,pyimport_conda("pyhdf","pyhdf","conda-forge"))
