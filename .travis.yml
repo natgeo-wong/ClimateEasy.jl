@@ -12,5 +12,6 @@ matrix:
   fast_finish: true
 notifications:
   email: false
-before_script:
-  - julia -e 'ENV["PYTHON"] = ""'
+env:
+  global:
+    - PYTHON=Conda
