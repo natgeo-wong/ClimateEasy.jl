@@ -10,6 +10,5 @@
 """
 
 function h4read(file::AbstractString,variable::AbstractString)
-    pyhdf = pyimport("pyhdf.SD");
     fhdf = pyhdf.SD(file,pyhdf.SDC.READ); dataob = fhdf.select(variable);
 end

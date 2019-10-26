@@ -10,12 +10,18 @@ module ClimateEasy
 
 ## Modules Used
 using Pkg, Dates, DelimitedFiles, Printf
-using Conda, PyCall, PyPlot
+using PyCall, PyPlot
 
 ## Adding relevant Python Functions
-Conda.add("matplotlib");
-Conda.add("cartopy");
-Conda.add("pyhdf",channel="conda-forge")
+const plt   = PyNULL()
+const ccrs  = PyNULL()
+const pyhdf = PyNULL()
+
+function __init__()
+    copy!(plt,pyimport_conda("matplotlib.pyplot","matplotlib.pyplot"))
+    copy!(ccrs,pyimport_conda("cartopy","cartopy"))
+    copy!(pyhdf,pyimport_conda("pyhdf","pyhdf","conda-forge"))
+end
 
 ## Exporting functions
 export
@@ -28,7 +34,7 @@ export
        convert2hourly, convert23hourly, convert2daily,
        convert2regionmean, convert2zonalmean, convert2meridionalmean,
        mollweide, robinson, coastlines,
-       h4read, clearclustermem
+       h4read
 
 include("dnt2str.jl")
 include("regions.jl")

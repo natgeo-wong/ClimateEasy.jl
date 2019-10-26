@@ -5,25 +5,23 @@ contour and contourf maps for climate data.
 """
 
 function mollweide(clon::Float16)
-    ccrs = pyimport("cartopy.crs");
-    return subplot(projection=ccrs.Mollweide(central_longitude=clon));
+    fig,ax = plt.subplot(projection=ccrs.Mollweide(central_longitude=clon));
+    return fig,ax
 end
 
 function mollweide(gridbounds::Array)
-    ccrs = pyimport("cartopy.crs");
-    ax = subplot(projection=ccrs.Mollweide()); ax.set_extent(gridbounds);
-    return ax
+    fig,ax = plt.subplot(projection=ccrs.Mollweide()); ax.set_extent(gridbounds);
+    return fig,ax
 end
 
 function robinson(clon::Float16)
-    ccrs = pyimport("cartopy.crs");
-    return subplot(projection=ccrs.Robinson(central_longitude=clon));
+    fig,ax = plt.subplot(projection=ccrs.Robinson(central_longitude=clon));
+    return fig,ax
 end
 
 function robinson(gridbounds::Array)
-    ccrs = pyimport("cartopy.crs");
-    ax = subplot(projection=ccrs.Robinson()); ax.set_extent(gridbounds);
-    return ax
+    fig,ax = plt.subplot(projection=ccrs.Robinson()); ax.set_extent(gridbounds);
+    return fig,ax
 end
 
 function coastlines(ax)
