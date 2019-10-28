@@ -11,13 +11,11 @@ I will be adding Documentation to this later.
 
 Currently, the ClimateEasy.jl package requires the following Julia dependencies:
 * Dates, DelimitedFiles, Printf
-* Conda, PyCall, PyPlot
+* PyCall, PyPlot
 
-The ClimateEasy.jl package requires the following Python dependencies:
+The ClimateEasy.jl package uses the following Python dependencies:
 * Cartopy
 * pyhdf
-
-These Python dependencies can be installed using Conda.add("pkg_name")
 
 Author(s):
 * Nathanael Zhixin Wong: nathanaelwong@fas.harvard.edu
