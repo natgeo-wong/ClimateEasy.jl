@@ -26,7 +26,7 @@ export
        yr2str, mo2str, dy2str, hr2str, mi2str, yrmo2str, ymd2str, ymdhm2str,
        yrmo2dir, ymd2dir, yrdy2dir,
        regionload, regioninfodisplay, regionshortname, regionfullname, regionparent,
-       regionbounds, regionpoint, regiongrid,
+       regionbounds, regionpoint, regiongrid, regionisglobe,
        regionextract, regionextractpoint, regionextractgrid,
        from0360to180, from180to0360,
        convert2hourly, convert23hourly, convert2daily,

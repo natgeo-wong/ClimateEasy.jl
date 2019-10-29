@@ -20,7 +20,7 @@ end
 
 function regioninfodisplay(regioninfo)
     @info "$(Dates.now()) - The following regions are offered in the ClimateTools.jl"
-    for ii = 1 : size(regioninfo,1); @info "$(Dates.now()) - $(ii)) $(regioninfo[ii,6])" end
+    for ii = 1 : size(regioninfo,1); @info "$(Dates.now()) - $(ii)) $(regioninfo[ii,7])" end
 end
 
 # Find Regions Bounds
@@ -55,51 +55,51 @@ end
 # Find Short Region Name
 
 function regionshortname(regID::Int64)
-    reginfo = regionload(); return reginfo[regID,1][1];
+    reginfo = regionload(); return reginfo[regID,1];
 end
 
 function regionshortname(regID::Int64,reginfo::AbstractArray)
-    return reginfo[regID,1][1];
+    return reginfo[regID,1];
 end
 
 # Find Full Region Name
 
 function regionfullname(reg::AbstractString)
     reginfo = regionload(); regions = reginfo[:,1]; regid = (regions .== reg);
-    return reginfo[regid,7][1];
+    return reginfo[regid,7];
 end
 
 function regionfullname(reg::AbstractString,reginfo::AbstractArray)
     regions = reginfo[:,1]; regid = (regions .== reg);
-    return reginfo[regid,7][1];
+    return reginfo[regid,7];
 end
 
 function regionfullname(regID::Int64)
-    reginfo = regionload(); return reginfo[regID,7][1];
+    reginfo = regionload(); return reginfo[regID,7];
 end
 
 function regionfullname(regID::Int64,reginfo::AbstractArray)
-    return reginfo[regID,7][1];
+    return reginfo[regID,7];
 end
 
 # Find Region Parent
 
 function regionparent(reg::AbstractString)
     reginfo = regionload(); regions = reginfo[:,1]; regid = (regions .== reg);
-    return reginfo[regid,2][1];
+    return reginfo[regid,2];
 end
 
 function regionparent(reg::AbstractString,reginfo::AbstractArray)
     regions = reginfo[:,1]; regid = (regions .== reg);
-    return reginfo[regid,2][1];
+    return reginfo[regid,2];
 end
 
 function regionparent(regID::Int64)
-    reginfo = regionload(); return reginfo[regID,2][1];
+    reginfo = regionload(); return reginfo[regID,2];
 end
 
 function regionparent(regID::Int64,reginfo::AbstractArray)
-    return reginfo[regID,2][1];
+    return reginfo[regID,2];
 end
 
 # Find if the Region is Global
