@@ -19,7 +19,7 @@ function regionload()
 end
 
 function regioninfodisplay(regioninfo)
-    @info "$(Dates.now()) - The following regions are offered in the ClimateTools.jl"
+    @info "$(Dates.now()) - The following regions are offered in the ClimateEasy.jl"
     for ii = 1 : size(regioninfo,1); @info "$(Dates.now()) - $(ii)) $(regioninfo[ii,7])" end
 end
 
@@ -118,11 +118,107 @@ function regionisglobe(regID::Int64)
     if regID == 1; return true; else; return false end
 end
 
+# Find if Point / Grid is in specified Regions
+
+function ispointinregion(plon::AbstractFloat,plat::AbstractFloat,lon::Array,lat::Array)
+
+    minlon = minimum(lon); maxlon = maximum(lon);
+    if     plon > maxlon; plon = plon - 360;
+    elseif plon < minlon; plon = plon + 360;
+    end
+
+    if (plon in lon) && (plat in lat); return true
+    else, return false
+    end
+
+end
+
+function ispointinregion(plon::AbstractFloat,plat::AbstractFloat,reg)
+
+    N,S,E,W = regionbounds(reg); lon = [E,W]; lat = [N,S];
+
+    minlon = minimum(lon); maxlon = maximum(lon);
+    if     plon > maxlon; plon = plon - 360;
+    elseif plon < minlon; plon = plon + 360;
+    end
+
+    if (plon in lon) && (plat in lat); return true
+    else, return false
+    end
+
+end
+
+function ispointinregion(pcoord::Array,lon::Array,lat::Array)
+
+    plon,plat = pcoord;
+    minlon = minimum(lon); maxlon = maximum(lon);
+    if     plon > maxlon; plon = plon - 360;
+    elseif plon < minlon; plon = plon + 360;
+    end
+
+    if (plon in lon) && (plat in lat); return true
+    else, return false
+    end
+
+end
+
+function ispointinregion(pcoord::Array,reg)
+
+    plon,plat = pcoord; N,S,E,W = regionbounds(reg); lon = [E,W]; lat = [N,S];
+
+    minlon = minimum(lon); maxlon = maximum(lon);
+    if     plon > maxlon; plon = plon - 360;
+    elseif plon < minlon; plon = plon + 360;
+    end
+
+    if (plon in lon) && (plat in lat); return true
+    else, return false
+    end
+
+end
+
+function isgridinregion(bounds::Array,reg)
+
+    N,S,E,W = regionbounds(reg); lon = [E,W]; lat = [N,S];
+
+    minlon = minimum(lon); maxlon = maximum(lon);
+    if     E > maxlon; E = from0360to180(E);
+    elseif E < minlon; E = from180to0360(E);
+    end
+    if     W > maxlon; W = from0360to180(W);
+    elseif W < minlon; W = from180to0360(W);
+    end
+
+    if (E in lon) && (W in lon) && (N in lat) && (S in lat); return true
+    else, return false
+    end
+
+end
+
+function isgridinregion(bounds::Array,lon::Array,lat::Array)
+
+    N,S,E,W = bounds;
+
+    minlon = minimum(lon); maxlon = maximum(lon);
+    if     E > maxlon; E = from0360to180(E);
+    elseif E < minlon; E = from180to0360(E);
+    end
+    if     W > maxlon; W = from0360to180(W);
+    elseif W < minlon; W = from180to0360(W);
+    end
+
+    if (E in lon) && (W in lon) && (N in lat) && (S in lat); return true
+    else, return false
+    end
+
+end
+
 # Find Index of given position in Region
+# Assumes that we points/grid are definitely in the region.
 
 function regionpoint(plon,plat,lon::Array,lat::Array)
 
-    minlon = lon(argmin(lon)); maxlon = lon(argmax(lon));
+    minlon = minimum(lon); maxlon = maximum(lon);
     if     plon > maxlon; plon = from0360to180(plon);
     elseif plon < minlon; plon = from180to0360(plon);
     end
@@ -133,11 +229,11 @@ function regionpoint(plon,plat,lon::Array,lat::Array)
 
 end
 
-function regiongrid(bounds,lon::Array,lat::Array)
+function regiongrid(bounds::Array,lon::Array,lat::Array)
 
     N,S,E,W = bounds;
 
-    minlon = lon[argmin(lon)]; maxlon = lon[argmax(lon)];
+    minlon = minimum(lon); maxlon = maximum(lon);
     if     E > maxlon; E = from0360to180(E);
     elseif E < minlon; E = from180to0360(E);
     end
