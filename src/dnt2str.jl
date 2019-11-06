@@ -14,55 +14,55 @@ There following types of functions are contained in this .jl module:
 """
 
 # Single-Unit Functions
-function yr2str(dnt::Date)
+function yr2str(dnt::TimeType)
     return @sprintf("%04d",Dates.year(dnt));
 end
 
-function mo2str(dnt::Date)
+function mo2str(dnt::TimeType)
     return @sprintf("%02d",Dates.month(dnt));
 end
 
-function dy2str(dnt::Date)
+function dy2str(dnt::TimeType)
     return @sprintf("%02d",Dates.day(dnt));
 end
 
-function hr2str(dnt::Date)
+function hr2str(dnt::TimeType)
     return @sprintf("%02d",Dates.hour(dnt));
 end
 
-function mi2str(dnt::Date)
+function mi2str(dnt::TimeType)
     return @sprintf("%02d",Dates.minute(dnt));
 end
 
 # Multi-Unit Functions
-function yrmo2str(dnt::Date)
+function yrmo2str(dnt::TimeType)
     yr = Dates.year(dnt); mo = Dates.month(dnt);
     return @sprintf("%04d%02d",yr,mo);
 end
 
-function ymd2str(dnt::Date)
+function ymd2str(dnt::TimeType)
     yr = Dates.year(dnt); mo = Dates.month(dnt); dy = Dates.day(dnt);
     return @sprintf("%04d%02d%02d",yr,mo,dy);
 end
 
-function ymdhm2str(dnt::Date)
+function ymdhm2str(dnt::TimeType)
     yr = Dates.year(dnt); mo = Dates.month(dnt); dy = Dates.day(dnt);
     hr = Dates.hour(dnt); mi = Dates.minute(dnt);
     return @sprintf("%04d%02d%02d%02d%02d00",yr,mo,dy,hr,mi);
 end
 
 # Directory Functions
-function yrmo2dir(dnt::Date)
+function yrmo2dir(dnt::TimeType)
     yr = Dates.year(dnt); mo = Dates.month(dnt);
     return @sprintf("%04d/%02d",yr,mo);
 end
 
-function ymd2dir(dnt::Date)
+function ymd2dir(dnt::TimeType)
     yr = Dates.year(dnt); mo = Dates.month(dnt); dy = Dates.day(dnt);
     return @sprintf("%04d/%02d/%02d",yr,mo,dy);
 end
 
-function yrdy2dir(dnt::Date)
+function yrdy2dir(dnt::TimeType)
     yr = Dates.year(dnt); dy = Dates.dayofyear(dnt);
     return @sprintf("%04d/%02d",yr,dy);
 end
