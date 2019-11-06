@@ -128,7 +128,7 @@ function ispointinregion(plon::AbstractFloat,plat::AbstractFloat,lon::Array,lat:
     end
 
     if (plon in lon) && (plat in lat); return true
-    else, return false
+    else; return false
     end
 
 end
@@ -143,7 +143,7 @@ function ispointinregion(plon::AbstractFloat,plat::AbstractFloat,reg)
     end
 
     if (plon in lon) && (plat in lat); return true
-    else, return false
+    else; return false
     end
 
 end
@@ -157,7 +157,7 @@ function ispointinregion(pcoord::Array,lon::Array,lat::Array)
     end
 
     if (plon in lon) && (plat in lat); return true
-    else, return false
+    else; return false
     end
 
 end
@@ -172,7 +172,7 @@ function ispointinregion(pcoord::Array,reg)
     end
 
     if (plon in lon) && (plat in lat); return true
-    else, return false
+    else; return false
     end
 
 end
@@ -190,7 +190,7 @@ function isgridinregion(bounds::Array,reg)
     end
 
     if (E in lon) && (W in lon) && (N in lat) && (S in lat); return true
-    else, return false
+    else; return false
     end
 
 end
@@ -208,7 +208,7 @@ function isgridinregion(bounds::Array,lon::Array,lat::Array)
     end
 
     if (E in lon) && (W in lon) && (N in lat) && (S in lat); return true
-    else, return false
+    else; return false
     end
 
 end
