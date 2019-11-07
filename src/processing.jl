@@ -11,7 +11,7 @@ follow the following formats:
 """
 
 function convert2hourly(data::Array,isavg=false)
-    nlon = size(data,1); nlat = size(data,2); nt = size(data,3); dt = nt/24;
+    nlon = size(data,1); nlat = size(data,2); nt = size(data,3); dt = Int(nt/24);
     data = reshape(data,(nlon,nlat,dt,:));
     if isavg; data = mean(data,dims=3);
     else;     data = sum(data,dims=3);
@@ -19,7 +19,7 @@ function convert2hourly(data::Array,isavg=false)
 end
 
 function convert23hourly(data::Array,isavg=false)
-    nlon = size(data,1); nlat = size(data,2); nt = size(data,3); dt = nt/8;
+    nlon = size(data,1); nlat = size(data,2); nt = size(data,3); dt = Int(nt/8);
     data = reshape(data,(nlon,nlat,dt,:));
     if isavg; data = mean(data,dims=3);
     else;     data = sum(data,dims=3);
