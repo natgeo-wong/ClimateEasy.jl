@@ -9,7 +9,7 @@ module ClimateEasy
 #   - Plotting on maps (requires CartoPy in conda package manager)
 
 ## Modules Used
-using Dates, DelimitedFiles, Printf
+using Dates, DelimitedFiles, Printf, Statistics
 using PyCall, PyPlot
 
 ## Adding relevant Python Functions
