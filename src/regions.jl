@@ -33,7 +33,7 @@ function regionbounds(reg::AbstractString)
 end
 
 function regionbounds(reg::AbstractString,reginfo::AbstractArray)
-    regions = reginfo[:,1]; regid = (regions .== reg);
+    regions = reginfo[:,1]; regid = (regions .== reg)[1];
     N,S,E,W = reginfo[regid,[3,5,6,4]];
     @debug "$(Dates.now()) - The bounds of the region are, in [N,S,E,W] format, [$(N),$(S),$(E),$(W)]."
     return [N,S,E,W]
@@ -66,12 +66,12 @@ end
 
 function regionfullname(reg::AbstractString)
     reginfo = regionload(); regions = reginfo[:,1]; regid = (regions .== reg);
-    return reginfo[regid,7];
+    return reginfo[regid,7][1];
 end
 
 function regionfullname(reg::AbstractString,reginfo::AbstractArray)
     regions = reginfo[:,1]; regid = (regions .== reg);
-    return reginfo[regid,7];
+    return reginfo[regid,7][1];
 end
 
 function regionfullname(regID::Int64)
@@ -86,12 +86,12 @@ end
 
 function regionparent(reg::AbstractString)
     reginfo = regionload(); regions = reginfo[:,1]; regid = (regions .== reg);
-    return reginfo[regid,2];
+    return reginfo[regid,2][1];
 end
 
 function regionparent(reg::AbstractString,reginfo::AbstractArray)
     regions = reginfo[:,1]; regid = (regions .== reg);
-    return reginfo[regid,2];
+    return reginfo[regid,2][1];
 end
 
 function regionparent(regID::Int64)
@@ -105,12 +105,12 @@ end
 # Find if the Region is Global
 
 function regionisglobe(reg::AbstractString)
-    reginfo = regionload(); regions = reginfo[:,1]; regid = (regions .== reg)[1];
+    reginfo = regionload(); regions = reginfo[:,1]; regid = (regions .== reg);
     if regid == 1; return true; else; return false end
 end
 
 function regionisglobe(reg::AbstractString,reginfo::AbstractArray)
-    regions = reginfo[:,1]; regid = (regions .== reg)[1];
+    regions = reginfo[:,1]; regid = (regions .== reg);
     if regid == 1; return true; else; return false end
 end
 
@@ -123,11 +123,15 @@ end
 function ispointinregion(plon::AbstractFloat,plat::AbstractFloat,lon::Array,lat::Array)
 
     minlon = minimum(lon); maxlon = maximum(lon);
+    minlat = minimum(lat); maxlat = maximum(lat);
+
     if     plon > maxlon; plon = plon - 360;
     elseif plon < minlon; plon = plon + 360;
     end
 
-    if (plon in lon) && (plat in lat); return true
+    if (plon > minlon) && (plon < maxlon) &&
+         (plat > minlat) && (plat < maxlat)
+          return true
     else; return false
     end
 
@@ -138,40 +142,52 @@ function ispointinregion(plon::AbstractFloat,plat::AbstractFloat,reg)
     N,S,E,W = regionbounds(reg); lon = [E,W]; lat = [N,S];
 
     minlon = minimum(lon); maxlon = maximum(lon);
+    minlat = minimum(lat); maxlat = maximum(lat);
+
     if     plon > maxlon; plon = plon - 360;
     elseif plon < minlon; plon = plon + 360;
     end
 
-    if (plon in lon) && (plat in lat); return true
+    if (plon > minlon) && (plon < maxlon) &&
+         (plat > minlat) && (plat < maxlat)
+          return true
     else; return false
     end
 
 end
 
-function ispointinregion(pcoord::Array,lon::Array,lat::Array)
+function ispointinregion(pcoord::AbstractArray,lon::Array,lat::Array)
 
     plon,plat = pcoord;
     minlon = minimum(lon); maxlon = maximum(lon);
+    minlat = minimum(lat); maxlat = maximum(lat);
+
     if     plon > maxlon; plon = plon - 360;
     elseif plon < minlon; plon = plon + 360;
     end
 
-    if (plon in lon) && (plat in lat); return true
+    if (plon > minlon) && (plon < maxlon) &&
+         (plat > minlat) && (plat < maxlat)
+          return true
     else; return false
     end
 
 end
 
-function ispointinregion(pcoord::Array,reg)
+function ispointinregion(pcoord::Array{Any,2},reg)
 
     plon,plat = pcoord; N,S,E,W = regionbounds(reg); lon = [E,W]; lat = [N,S];
 
     minlon = minimum(lon); maxlon = maximum(lon);
+    minlat = minimum(lat); maxlat = maximum(lat);
+
     if     plon > maxlon; plon = plon - 360;
     elseif plon < minlon; plon = plon + 360;
     end
 
-    if (plon in lon) && (plat in lat); return true
+    if (plon > minlon) && (plon < maxlon) &&
+         (plat > minlat) && (plat < maxlat)
+          return true
     else; return false
     end
 
@@ -179,9 +195,12 @@ end
 
 function isgridinregion(bounds::Array,reg)
 
-    N,S,E,W = regionbounds(reg); lon = [E,W]; lat = [N,S];
+    N,S,E,W = bounds;
+    rN,rS,rE,rW = regionbounds(reg); lon = [rE,rW]; lat = [rN,rS];
 
     minlon = minimum(lon); maxlon = maximum(lon);
+    minlat = minimum(lat); maxlat = maximum(lat);
+
     if     E > maxlon; E = from0360to180(E);
     elseif E < minlon; E = from180to0360(E);
     end
@@ -189,13 +208,15 @@ function isgridinregion(bounds::Array,reg)
     elseif W < minlon; W = from180to0360(W);
     end
 
-    if (E in lon) && (W in lon) && (N in lat) && (S in lat); return true
+    if all([W,E] > minlon) && all([W,E] < maxlon) &&
+        all([N,S] > minlat) && all([N,S] < maxlat)
+          return true
     else; return false
     end
 
 end
 
-function isgridinregion(bounds::Array,lon::Array,lat::Array)
+function isgridinregion(bounds::Array{Any,2},lon::Array,lat::Array)
 
     N,S,E,W = bounds;
 
@@ -207,7 +228,9 @@ function isgridinregion(bounds::Array,lon::Array,lat::Array)
     elseif W < minlon; W = from180to0360(W);
     end
 
-    if (E in lon) && (W in lon) && (N in lat) && (S in lat); return true
+    if all([W,E] > minlon) && all([W,E] < maxlon) &&
+        all([N,S] > minlat) && all([N,S] < maxlat)
+          return true
     else; return false
     end
 
@@ -229,7 +252,7 @@ function regionpoint(plon::AbstractFloat,plat::AbstractFloat,lon::Array,lat::Arr
 
 end
 
-function regionpoint(pcoord::Array,lon::Array,lat::Array)
+function regionpoint(pcoord::Array{Any,2},lon::Array,lat::Array)
 
     plon,plat = pcoord; minlon = minimum(lon); maxlon = maximum(lon);
     if     plon > maxlon; plon = from0360to180(plon);

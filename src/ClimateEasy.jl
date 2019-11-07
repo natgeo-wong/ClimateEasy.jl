@@ -27,6 +27,7 @@ export
        yrmo2dir, ymd2dir, yrdy2dir,
        regionload, regioninfodisplay, regionshortname, regionfullname, regionparent,
        regionbounds, regionpoint, regiongrid, regionisglobe,
+       ispointinregion, isgridinregion,
        regionextract, regionextractpoint, regionextractgrid,
        from0360to180, from180to0360,
        convert2hourly, convert23hourly, convert2daily,
