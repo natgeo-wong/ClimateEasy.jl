@@ -216,9 +216,22 @@ end
 # Find Index of given position in Region
 # Assumes that we points/grid are definitely in the region.
 
-function regionpoint(plon,plat,lon::Array,lat::Array)
+function regionpoint(plon::AbstractFloat,plat::AbstractFloat,lon::Array,lat::Array)
 
     minlon = minimum(lon); maxlon = maximum(lon);
+    if     plon > maxlon; plon = from0360to180(plon);
+    elseif plon < minlon; plon = from180to0360(plon);
+    end
+
+    @info "$(Dates.now()) - Finding grid points in data closest to requested location ..."
+    ilon = argmin(abs.(lon.-plon)); ilat = argmin(abs.(lat.-plat));
+    return [ilon,ilat]
+
+end
+
+function regionpoint(pcoord::Array,lon::Array,lat::Array)
+
+    plon,plat = pcoord; minlon = minimum(lon); maxlon = maximum(lon);
     if     plon > maxlon; plon = from0360to180(plon);
     elseif plon < minlon; plon = from180to0360(plon);
     end
