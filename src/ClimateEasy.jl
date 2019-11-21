@@ -34,7 +34,7 @@ export
        convert2hourly, convert23hourly, convert2daily,
        convert2regionmean, convert2zonalmean, convert2meridionalmean,
        mollweide, robinson, coastlines,
-       h4read
+       h4read, nanop
 
 include("datetime.jl")
 include("regions.jl")
