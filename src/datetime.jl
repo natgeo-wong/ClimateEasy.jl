@@ -13,7 +13,7 @@ There following types of functions are contained in this .jl module:
 
 """
 
-# Single-Unit Functions
+# Single-Unit String Functions
 function yr2str(dnt::TimeType)
     return @sprintf("%04d",Dates.year(dnt));
 end
@@ -34,7 +34,7 @@ function mi2str(dnt::TimeType)
     return @sprintf("%02d",Dates.minute(dnt));
 end
 
-# Multi-Unit Functions
+# Multi-Unit String Functions
 function yrmo2str(dnt::TimeType)
     yr = Dates.year(dnt); mo = Dates.month(dnt);
     return @sprintf("%04d%02d",yr,mo);
@@ -51,7 +51,7 @@ function ymdhm2str(dnt::TimeType)
     return @sprintf("%04d%02d%02d%02d%02d00",yr,mo,dy,hr,mi);
 end
 
-# Directory Functions
+# Directory String Functions
 function yrmo2dir(dnt::TimeType)
     yr = Dates.year(dnt); mo = Dates.month(dnt);
     return @sprintf("%04d/%02d",yr,mo);
@@ -65,4 +65,24 @@ end
 function yrdy2dir(dnt::TimeType)
     yr = Dates.year(dnt); dy = Dates.dayofyear(dnt);
     return @sprintf("%04d/%02d",yr,dy);
+end
+
+# Convert Season to Months
+
+function dntsea2mon(season::Int)
+
+    if     season == 0; return ':';
+    elseif season == 1; return [12,1,2]; elseif season == 2; return [3,4,5];
+    elseif season == 3; return [6,7,8];  elseif season == 4; return [9,10,11];
+    end
+
+end
+
+function dntsea2mon(season::AbstractString)
+
+    if     season == "all"; return ':';
+    elseif season == "DJF"; return [12,1,2]; elseif season == "MAM"; return [3,4,5];
+    elseif season == "JJA"; return [6,7,8];  elseif season == "SON"; return [9,10,11];
+    end
+
 end
