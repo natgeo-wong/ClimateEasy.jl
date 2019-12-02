@@ -10,5 +10,5 @@
 """
 
 function h4read(file::AbstractString,variable::AbstractString)
-    fhdf = pyhdf.SD(file,pyhdf.SDC.READ); dataob = fhdf.select(variable);
+    fhdf = pyhdf.SD(file,pyhdf.SDC.READ); dataob = fhdf.select(variable); fhdf.end();
 end
