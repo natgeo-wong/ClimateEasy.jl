@@ -246,7 +246,7 @@ function regionpoint(plon::AbstractFloat,plat::AbstractFloat,lon::Array,lat::Arr
     elseif plon < minlon; plon = from180to0360(plon);
     end
 
-    @info "$(Dates.now()) - Finding grid points in data closest to requested location ..."
+    @debug "$(Dates.now()) - Finding grid points in data closest to requested location ..."
     ilon = argmin(abs.(lon.-plon)); ilat = argmin(abs.(lat.-plat));
     return [ilon,ilat]
 
@@ -259,7 +259,7 @@ function regionpoint(pcoord::Array{Any,2},lon::Array,lat::Array)
     elseif plon < minlon; plon = from180to0360(plon);
     end
 
-    @info "$(Dates.now()) - Finding grid points in data closest to requested location ..."
+    @debug "$(Dates.now()) - Finding grid points in data closest to requested location ..."
     ilon = argmin(abs.(lon.-plon)); ilat = argmin(abs.(lat.-plat));
     return [ilon,ilat]
 
@@ -277,7 +277,7 @@ function regiongrid(bounds::Array,lon::Array,lat::Array)
     elseif W < minlon; W = from180to0360(W);
     end
 
-    @info "$(Dates.now()) - Finding indices of data matching given boundaries ..."
+    @debug "$(Dates.now()) - Finding indices of data matching given boundaries ..."
     iE = argmin(abs.(lon.-E)); iW = argmin(abs.(lon.-W));
     iN = argmin(abs.(lat.-N)); iS = argmin(abs.(lat.-S));
     return [iN,iS,iE,iW]
@@ -337,7 +337,7 @@ function regionextractgrid(data,reg,lon::Array,lat::Array)
 
     data = regionpermute(data);
 
-    @info "$(Dates.now()) - Determining indices of longitude and latitude boundaries in parent dataset ..."
+    @debug "$(Dates.now()) - Determining indices of longitude and latitude boundaries in parent dataset ..."
     bounds = regionbounds(reg); nlon = length(lon); ndim = ndims(data);
     igrid  = regiongrid(bounds,lon,lat);
     iN = igrid[1]; iS = igrid[2]; iE = igrid[3]; iW = igrid[4];
