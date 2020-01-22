@@ -1,6 +1,6 @@
 #(1)RegID (2)RegParent (3)N (4)W (5)S (6)E (7)Description
-GLB,GLB,90,0,-90,359.9,Global
-TRP,GLB,30,0,-30,359.9,Tropical Belt
+GLB,GLB,90,0,-90,360,Global
+TRP,GLB,30,0,-30,360,Tropical Belt
 SEA,GLB,20,90,-15,165,Southeast Asia / Maritime Continent
 IND,GLB,35,60,-15,100,Indian Subcontinent / Indian Ocean
 MLD,SEA,20,93,0,110,Mainland Southeast Asia

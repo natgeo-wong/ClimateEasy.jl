@@ -120,167 +120,148 @@ end
 
 # Find if Point / Grid is in specified Regions
 
-function ispointinregion(plon::AbstractFloat,plat::AbstractFloat,lon::Array,lat::Array)
+function ispointinregion(plon::Real,plat::Real,lon::Array{Real,1},lat::Array{Real,1})
 
-    minlon = minimum(lon); maxlon = maximum(lon);
-    minlat = minimum(lat); maxlat = maximum(lat);
+    minlon = mod(minimum(lon),360);  minlat = minimum(lat);
+    maxlon = mod(maximum(lon),360);  maxlat = maximum(lat);
+    thrlon = abs((lon[2]-lon[1])/2); thrlat = abs((lat[2]-lat[1])/2);
 
-    if     plon > maxlon; plon = plon - 360;
-    elseif plon < minlon; plon = plon + 360;
-    end
+    if (minlon < maxlon && (plon < (minlon-thrlon) || plon > (maxlon+thrlon))) ||
+        (minlon > maxlon && (plon < (maxlon-thrlon) && plon > (minlon+thrlon))) ||
+        plat < (minlat-thrlat) || plat > (maxlat+thrlat)
 
-    if (plon > minlon) && (plon < maxlon) &&
-         (plat > minlat) && (plat < maxlat)
-          return true
-    else; return false
-    end
+          error("$(Dates.now()) - Requested grid points are not in Region ...")
 
-end
-
-function ispointinregion(plon::AbstractFloat,plat::AbstractFloat,reg)
-
-    N,S,E,W = regionbounds(reg); lon = [E,W]; lat = [N,S];
-
-    minlon = minimum(lon); maxlon = maximum(lon);
-    minlat = minimum(lat); maxlat = maximum(lat);
-
-    if     plon > maxlon; plon = plon - 360;
-    elseif plon < minlon; plon = plon + 360;
-    end
-
-    if (plon > minlon) && (plon < maxlon) &&
-         (plat > minlat) && (plat < maxlat)
-          return true
-    else; return false
     end
 
 end
 
-function ispointinregion(pcoord::AbstractArray,lon::Array,lat::Array)
+function ispointinregion(plon::Real,plat::Real,reg)
+
+    rN,rS,rE,rW = regionbounds(reg); rW = mod(rW,360); rE = mod(rE,360);
+
+    if (rW < rE && (plon < rW || plon > rE)) || (rW > rE && (plon < rE && plon > rW)) ||
+        plat < S || plat > N
+
+          error("$(Dates.now()) - Requested grid points are not in Region ...")
+    end
+
+end
+
+function ispointinregion(pcoord::Array{Real,1},lon::Array{Real,1},lat::Array{Real,1})
 
     plon,plat = pcoord;
-    minlon = minimum(lon); maxlon = maximum(lon);
-    minlat = minimum(lat); maxlat = maximum(lat);
+    minlon = mod(minimum(lon),360);  minlat = minimum(lat);
+    maxlon = mod(maximum(lon),360);  maxlat = maximum(lat);
+    thrlon = abs((lon[2]-lon[1])/2); thrlat = abs((lat[2]-lat[1])/2);
 
-    if     plon > maxlon; plon = plon - 360;
-    elseif plon < minlon; plon = plon + 360;
-    end
+    if (minlon < maxlon && (plon < (minlon-thrlon) || plon > (maxlon+thrlon))) ||
+        (minlon > maxlon && (plon < (maxlon-thrlon) && plon > (minlon+thrlon))) ||
+        plat < (minlat-thrlat) || plat > (maxlat+thrlat)
 
-    if (plon > minlon) && (plon < maxlon) &&
-         (plat > minlat) && (plat < maxlat)
-          return true
-    else; return false
+          error("$(Dates.now()) - Requested grid points are not in Region ...")
+
     end
 
 end
 
-function ispointinregion(pcoord::Array{Any,2},reg)
+function ispointinregion(pcoord::Array{Real,1},reg)
 
-    plon,plat = pcoord; N,S,E,W = regionbounds(reg); lon = [E,W]; lat = [N,S];
+    plon,plat = pcoord; rN,rS,rE,rW = regionbounds(reg);
+    rW = mod(rW,360); rE = mod(rE,360);
 
-    minlon = minimum(lon); maxlon = maximum(lon);
-    minlat = minimum(lat); maxlat = maximum(lat);
+    if (rW < rE && (plon < rW || plon > rE)) || (rW > rE && (plon < rE && plon > rW)) ||
+        plat < S || plat > N
 
-    if     plon > maxlon; plon = plon - 360;
-    elseif plon < minlon; plon = plon + 360;
-    end
+          error("$(Dates.now()) - Requested grid points are not in Region ...")
 
-    if (plon > minlon) && (plon < maxlon) &&
-         (plat > minlat) && (plat < maxlat)
-          return true
-    else; return false
     end
 
 end
 
 function isgridinregion(bounds::Array,reg)
 
-    N,S,E,W = bounds;
-    rN,rS,rE,rW = regionbounds(reg); lon = [rE,rW]; lat = [rN,rS];
+    N,S,E,W = bounds; rN,rS,rE,rW = regionbounds(reg);
+    E = mod(E,360); rE = mod(rE,360); W = mod(W,360); rW = mod(rW,360);
 
-    minlon = minimum(lon); maxlon = maximum(lon);
-    minlat = minimum(lat); maxlat = maximum(lat);
+    if (rW < rE && (E < rW || E > rE)) || (rW > rE && (E < rE && E > rW)) ||
+        (rW < rE && (W < rW || W > rE)) || (rW > rE && (W < rE && W > rW)) ||
+        N < rS || N > rN || S < rS || S > rN
 
-    if     E > maxlon; E = from0360to180(E);
-    elseif E < minlon; E = from180to0360(E);
-    end
-    if     W > maxlon; W = from0360to180(W);
-    elseif W < minlon; W = from180to0360(W);
-    end
+          error("$(Dates.now()) - Requested grid points are not in Region ...")
 
-    if all([W,E] > minlon) && all([W,E] < maxlon) &&
-        all([N,S] > minlat) && all([N,S] < maxlat)
-          return true
-    else; return false
     end
 
 end
 
-function isgridinregion(bounds::Array{Any,2},lon::Array,lat::Array)
+function isgridinregion(bounds::Array,lon::Array,lat::Array)
 
     N,S,E,W = bounds;
+    E = mod(E,360); maxlon = mod(maximum(lon),360); maxlat = maximum(lat);
+    W = mod(W,360); minlon = mod(minimum(lon),360); minlat = minimum(lat);
 
-    minlon = minimum(lon); maxlon = maximum(lon);
-    if     E > maxlon; E = from0360to180(E);
-    elseif E < minlon; E = from180to0360(E);
-    end
-    if     W > maxlon; W = from0360to180(W);
-    elseif W < minlon; W = from180to0360(W);
-    end
+    if (minlon < maxlon && (E < (minlon-thrlon) || E > (maxlon+thrlon))) ||
+        (minlon > maxlon && (E < (maxlon-thrlon) && E > (minlon+thrlon))) ||
+        (minlon < maxlon && (W < (minlon-thrlon) || W > (maxlon+thrlon))) ||
+        (minlon > maxlon && (W < (maxlon-thrlon) && W > (minlon+thrlon))) ||
+        N < (minlat-thrlat) || N > (maxlat+thrlat) ||
+        S < (minlat-thrlat) || S > (maxlat+thrlat)
 
-    if all([W,E] > minlon) && all([W,E] < maxlon) &&
-        all([N,S] > minlat) && all([N,S] < maxlat)
-          return true
-    else; return false
+          error("$(Dates.now()) - Requested grid points are not in Region ...")
+
     end
 
 end
 
 # Find Index of given position in Region
-# Assumes that we points/grid are definitely in the region.
 
 function regionpoint(plon::AbstractFloat,plat::AbstractFloat,lon::Array,lat::Array)
 
-    minlon = minimum(lon); maxlon = maximum(lon);
-    if     plon > maxlon; plon = from0360to180(plon);
-    elseif plon < minlon; plon = from180to0360(plon);
-    end
+    plon = mod(plon,360); ispointinregion(plon,plat,lon,lat)
 
     @debug "$(Dates.now()) - Finding grid points in data closest to requested location ..."
-    ilon = argmin(abs.(lon.-plon)); ilat = argmin(abs.(lat.-plat));
-    return [ilon,ilat]
+    lon = mod(lon,360); ilon = argmin(abs.(lon.-plon)); ilat = argmin(abs.(lat.-plat));
 
-end
-
-function regionpoint(pcoord::Array{Any,2},lon::Array,lat::Array)
-
-    plon,plat = pcoord; minlon = minimum(lon); maxlon = maximum(lon);
-    if     plon > maxlon; plon = from0360to180(plon);
-    elseif plon < minlon; plon = from180to0360(plon);
-    end
-
-    @debug "$(Dates.now()) - Finding grid points in data closest to requested location ..."
-    ilon = argmin(abs.(lon.-plon)); ilat = argmin(abs.(lat.-plat));
     return [ilon,ilat]
 
 end
 
 function regiongrid(bounds::Array,lon::Array,lat::Array)
 
-    N,S,E,W = bounds;
-
-    minlon = minimum(lon); maxlon = maximum(lon);
-    if     E > maxlon; E = from0360to180(E);
-    elseif E < minlon; E = from180to0360(E);
-    end
-    if     W > maxlon; W = from0360to180(W);
-    elseif W < minlon; W = from180to0360(W);
-    end
+    N,S,E,W = bounds; isgridinregion(bounds,lon,lat)
 
     @debug "$(Dates.now()) - Finding indices of data matching given boundaries ..."
-    iE = argmin(abs.(lon.-E)); iW = argmin(abs.(lon.-W));
-    iN = argmin(abs.(lat.-N)); iS = argmin(abs.(lat.-S));
+
+    E = mod(E,360); W = mod(W,360); lon = mod(lon,360);
+    iN = argmin(abs.(lat.-N)); iS = argmin(abs.(lat.-S)); iW = argmin(abs.(lon.-W));
+    if bounds[3] == bounds[4]
+          if iW != 1; iE = iW - 1; else; iE = length(lon); end
+    else; iE = argmin(abs.(lon.-E)); iW = argmin(abs.(lon.-W));
+    end
+
     return [iN,iS,iE,iW]
+
+end
+
+function regiongridvec(reg,lon::Array,lat::Array)
+
+    @debug "$(Dates.now()) - Determining indices of longitude and latitude boundaries in parent dataset ..."
+    bounds = regionbounds(reg); nlon = length(lon); ndim = ndims(data);
+    igrid  = regiongrid(bounds,lon,lat);
+    iN = igrid[1]; iS = igrid[2]; iE = igrid[3]; iW = igrid[4];
+
+    @debug "$(Dates.now()) - Creating vector of latitude indices to extract ..."
+    if     iN < iS; iNS = iN : iS
+    elseif iS < iN; iNS = iS : iN
+    end
+
+    @debug "$(Dates.now()) - Creating vector of longitude indices to extract ..."
+    if     iW < iE; iWE = iW : iE
+    elseif iW > iE; iWE = 1 : (iE + nlon - iW);
+        lon[1:(iW-1)] = lon[1:(iW-1)] .+ 360; lon = circshift(lon,1-iW);
+    end
+
+    return [lon[iWE],lat[iNS]]
 
 end
 
@@ -302,22 +283,28 @@ end
 
 # Data Extraction
 
-function regionpermute(data)
-    irow = size(data,1); icol = size(data,2); nd = ndims(data)
-    if irow < icol
-        @info "$(Dates.now()) - Number of rows smaller than number of columns, indicating that data is in (lat,lon) rather than (lon,lat) format.  Permuting to (lon,lat) formatting."
-        if     nd == 2; data = transpose(data)
-        elseif nd > 2;  data = permutedims(data,vcat(2,1,convert(Array,3:nd)))
-        end
-    end
-    return data
-end
+# function regionpermute(data)
+#     irow = size(data,1); icol = size(data,2); nd = ndims(data)
+#     if irow < icol
+#         @info "$(Dates.now()) - Number of rows smaller than number of columns, indicating that data is in (lat,lon) rather than (lon,lat) format.  Permuting to (lon,lat) formatting."
+#         if     nd == 2; data = transpose(data)
+#         elseif nd > 2;  data = permutedims(data,vcat(2,1,convert(Array,3:nd)))
+#         end
+#     end
+#     return data
+# end
 
 function regionextract(data,coord,ndim)
 
-    if     ndim == 2; data = data[coord[1],coord[2]];
-    elseif ndim == 3; data = data[coord[1],coord[2],:];
-    elseif ndim == 4; data = data[coord[1],coord[2],:,:];
+    nlon1 = length(coord[1]); nlon2 = size(data,1);
+    nlat1 = length(coord[2]); nlat2 = size(data,2);
+    nt = size(data)[3:end]
+
+    if ndim == 2; data = data[coord[1],coord[2]];
+    elseif ndim >= 3;
+        data = reshape(data,nlon2,nlat2,:)
+        data = data[coord[1],coord[2],:];
+        data = reshape(data,Tuple(vcat(nlon1,nlat1,nt...)));
     end
 
 end
@@ -333,9 +320,11 @@ function regionextractpoint(data,plon,plat,lon::Array,lat::Array)
 
 end
 
-function regionextractgrid(data,reg,lon::Array,lat::Array)
-
-    data = regionpermute(data);
+function regionextractgrid(
+    data::Array{Real},
+    reg, lon::Array{Real,1}, lat::Array{Real,1},
+    tmp::Array{Real}
+)
 
     @debug "$(Dates.now()) - Determining indices of longitude and latitude boundaries in parent dataset ..."
     bounds = regionbounds(reg); nlon = length(lon); ndim = ndims(data);
@@ -349,22 +338,13 @@ function regionextractgrid(data,reg,lon::Array,lat::Array)
 
     @debug "$(Dates.now()) - Creating vector of longitude indices to extract ..."
     if     iW < iE; iWE = iW : iE
-    elseif iW > iE; iWE = 1 : (iE + nlon - iW); ilon = vcat(iW:nlon,1:(iW-1));
-
-        @info "$(Dates.now()) - West indice larger than East indice.  Reshaping of longitude vector required."
-        lon[1:(iW-1)] = lon[1:(iW-1)] .+ 360; lon = lon[ilon];
-
-        @info "$(Dates.now()) - Reshaping data matrix to match longitude vector ..."
-        if     ndim == 2; data = data[ilon,:];
-        elseif ndim == 3; data = data[ilon,:,:];
-        elseif ndim == 4; data = data[ilon,:,:,:];
-        end
+    elseif iW > iE; iWE = 1 : (iE + nlon - iW);
+        circshift!(tmp,data,1-iW);
     end
 
     @info "$(Dates.now()) - Extracting data for the $(regionfullname(reg)) region from global datasets ..."
-    rdata = regionextract(data,[iWE,iNS],ndim)
-    rgrid = [lon[iWE],lat[iNS]]
+    rdata = regionextract(tmp,[iWE,iNS],ndim)
 
-    return rdata,rgrid
+    return rdata
 
 end

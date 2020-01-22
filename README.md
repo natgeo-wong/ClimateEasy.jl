@@ -1,5 +1,7 @@
 # ClimateEasy
 
+NOTE: BREAKING CHANGES FOR V0.2
+
 ClimateEasy contains scripts and functions that aim to automate the basic parts
 of coding in climate research.  It currently has the following functionalities:
 * Conversion of dates to formatted strings
