@@ -18,7 +18,7 @@ function regionload()
     return readdlm(joinpath(@__DIR__,"regions.txt"),',',comments=true);
 end
 
-function regioninfodisplay(regioninfo)
+function regioninfodisplay(regioninfo::AbstractArray)
     @info "$(Dates.now()) - The following regions are offered in the ClimateEasy.jl"
     for ii = 1 : size(regioninfo,1); @info "$(Dates.now()) - $(ii)) $(regioninfo[ii,7])" end
 end
@@ -39,14 +39,14 @@ function regionbounds(reg::AbstractString,reginfo::AbstractArray)
     return [N,S,E,W]
 end
 
-function regionbounds(regID::Int64)
+function regionbounds(regID::Integer)
     reginfo = regionload();
     N,S,E,W = reginfo[regID,[3,5,6,4]];
     @debug "$(Dates.now()) - The bounds of the region are, in [N,S,E,W] format, [$(N),$(S),$(E),$(W)]."
     return [N,S,E,W]
 end
 
-function regionbounds(regID::Int64,reginfo::AbstractArray)
+function regionbounds(regID::Integer,reginfo::AbstractArray)
     N,S,E,W = reginfo[regID,[3,5,6,4]];
     @debug "$(Dates.now()) - The bounds of the region are, in [N,S,E,W] format, [$(N),$(S),$(E),$(W)]."
     return [N,S,E,W]
@@ -54,11 +54,11 @@ end
 
 # Find Short Region Name
 
-function regionshortname(regID::Int64)
+function regionshortname(regID::Integer)
     reginfo = regionload(); return reginfo[regID,1];
 end
 
-function regionshortname(regID::Int64,reginfo::AbstractArray)
+function regionshortname(regID::Integer,reginfo::AbstractArray)
     return reginfo[regID,1];
 end
 
@@ -74,11 +74,11 @@ function regionfullname(reg::AbstractString,reginfo::AbstractArray)
     return reginfo[regid,7][1];
 end
 
-function regionfullname(regID::Int64)
+function regionfullname(regID::Integer)
     reginfo = regionload(); return reginfo[regID,7];
 end
 
-function regionfullname(regID::Int64,reginfo::AbstractArray)
+function regionfullname(regID::Integer,reginfo::AbstractArray)
     return reginfo[regID,7];
 end
 
@@ -94,11 +94,11 @@ function regionparent(reg::AbstractString,reginfo::AbstractArray)
     return reginfo[regid,2][1];
 end
 
-function regionparent(regID::Int64)
+function regionparent(regID::Integer)
     reginfo = regionload(); return reginfo[regID,2];
 end
 
-function regionparent(regID::Int64,reginfo::AbstractArray)
+function regionparent(regID::Integer,reginfo::AbstractArray)
     return reginfo[regID,2];
 end
 
@@ -114,13 +114,16 @@ function regionisglobe(reg::AbstractString,reginfo::AbstractArray)
     if regid == 1; return true; else; return false end
 end
 
-function regionisglobe(regID::Int64)
+function regionisglobe(regID::Integer)
     if regID == 1; return true; else; return false end
 end
 
 # Find if Point / Grid is in specified Regions
 
-function ispointinregion(plon::Real,plat::Real,lon::Array{Real,1},lat::Array{Real,1})
+function ispointinregion(
+    plon::Real, plat::Real,
+    lon::Vector{<:Real}, lat::Vector{<:Real}
+)
 
     minlon = mod(minimum(lon),360);  minlat = minimum(lat);
     maxlon = mod(maximum(lon),360);  maxlat = maximum(lat);
@@ -148,7 +151,7 @@ function ispointinregion(plon::Real,plat::Real,reg)
 
 end
 
-function ispointinregion(pcoord::Array{Real,1},lon::Array{Real,1},lat::Array{Real,1})
+function ispointinregion(pcoord::Vector{<:Real},lon::Vector{<:Real},lat::Vector{<:Real})
 
     plon,plat = pcoord;
     minlon = mod(minimum(lon),360);  minlat = minimum(lat);
@@ -165,7 +168,7 @@ function ispointinregion(pcoord::Array{Real,1},lon::Array{Real,1},lat::Array{Rea
 
 end
 
-function ispointinregion(pcoord::Array{Real,1},reg)
+function ispointinregion(pcoord::Vector{<:Real},reg)
 
     plon,plat = pcoord; rN,rS,rE,rW = regionbounds(reg);
     rW = mod(rW,360); rE = mod(rE,360);
@@ -194,11 +197,12 @@ function isgridinregion(bounds::Array,reg)
 
 end
 
-function isgridinregion(bounds::Array,lon::Array,lat::Array)
+function isgridinregion(bounds::Array,lon::Vector{<:Real},lat::Vector{<:Real})
 
-    N,S,E,W = bounds;
-    E = mod(E,360); maxlon = mod(maximum(lon),360); maxlat = maximum(lat);
-    W = mod(W,360); minlon = mod(minimum(lon),360); minlat = minimum(lat);
+    N,S,E,W = bounds; E = mod(E,360); W = mod(W,360);
+    maxlon = mod(maximum(lon),360);  maxlat = maximum(lat);
+    minlon = mod(minimum(lon),360);  minlat = minimum(lat);
+    thrlon = abs((lon[2]-lon[1])/2); thrlat = abs((lat[2]-lat[1])/2);
 
     if (minlon < maxlon && (E < (minlon-thrlon) || E > (maxlon+thrlon))) ||
         (minlon > maxlon && (E < (maxlon-thrlon) && E > (minlon+thrlon))) ||
@@ -215,24 +219,27 @@ end
 
 # Find Index of given position in Region
 
-function regionpoint(plon::AbstractFloat,plat::AbstractFloat,lon::Array,lat::Array)
+function regionpoint(
+    plon::Real, plat::Real,
+    lon::Vector{<:Real}, lat::Vector{<:Real}
+)
 
     plon = mod(plon,360); ispointinregion(plon,plat,lon,lat)
 
     @debug "$(Dates.now()) - Finding grid points in data closest to requested location ..."
-    lon = mod(lon,360); ilon = argmin(abs.(lon.-plon)); ilat = argmin(abs.(lat.-plat));
+    lon = mod.(lon,360); ilon = argmin(abs.(lon.-plon)); ilat = argmin(abs.(lat.-plat));
 
     return [ilon,ilat]
 
 end
 
-function regiongrid(bounds::Array,lon::Array,lat::Array)
+function regiongrid(bounds::Array,lon::Vector{<:Real},lat::Vector{<:Real})
 
     N,S,E,W = bounds; isgridinregion(bounds,lon,lat)
 
     @debug "$(Dates.now()) - Finding indices of data matching given boundaries ..."
 
-    E = mod(E,360); W = mod(W,360); lon = mod(lon,360);
+    E = mod(E,360); W = mod(W,360); lon = mod.(lon,360);
     iN = argmin(abs.(lat.-N)); iS = argmin(abs.(lat.-S)); iW = argmin(abs.(lon.-W));
     if bounds[3] == bounds[4]
           if iW != 1; iE = iW - 1; else; iE = length(lon); end
@@ -243,11 +250,10 @@ function regiongrid(bounds::Array,lon::Array,lat::Array)
 
 end
 
-function regiongridvec(reg,lon::Array,lat::Array)
+function regiongridvec(reg,lon::Vector{<:Real},lat::Vector{<:Real})
 
     @debug "$(Dates.now()) - Determining indices of longitude and latitude boundaries in parent dataset ..."
-    bounds = regionbounds(reg); nlon = length(lon); ndim = ndims(data);
-    igrid  = regiongrid(bounds,lon,lat);
+    bounds = regionbounds(reg); igrid = regiongrid(bounds,lon,lat);
     iN = igrid[1]; iS = igrid[2]; iE = igrid[3]; iW = igrid[4];
 
     @debug "$(Dates.now()) - Creating vector of latitude indices to extract ..."
@@ -257,24 +263,26 @@ function regiongridvec(reg,lon::Array,lat::Array)
 
     @debug "$(Dates.now()) - Creating vector of longitude indices to extract ..."
     if     iW < iE; iWE = iW : iE
-    elseif iW > iE; iWE = 1 : (iE + nlon - iW);
+    elseif iW > iE; iWE = 1 : (iE + length(lon) - iW);
         lon[1:(iW-1)] = lon[1:(iW-1)] .+ 360; lon = circshift(lon,1-iW);
     end
 
-    return [lon[iWE],lat[iNS]]
+    reginfo = Dict("boundsID"=>igrid,"IDvec"=>[iWE,iNS],"fullname"=>regionfullname(reg))
+
+    return lon[iWE],lat[iNS],reginfo
 
 end
 
 # Tranformation of Coordinates
 
-function from180to0360(lon)
+function from180to0360(lon::Vector{<:Real})
 
     @info "$(Dates.now()) - Longitude of point given in [-180,180] but data range is [0,360].  Adjusting coordinates of point to match."
     lon = lon + 360;
 
 end
 
-function from0360to180(lon)
+function from0360to180(lon::Vector{<:Real})
 
     @info "$(Dates.now()) - Longitude of point given in [0,360] but data range is [-180,180].  Adjusting coordinates of point to match."
     lon = lon - 360;
@@ -294,11 +302,11 @@ end
 #     return data
 # end
 
-function regionextract(data,coord,ndim)
+function regionextract(data::Array{<:Real},coord::Array,ndim::Integer)
 
     nlon1 = length(coord[1]); nlon2 = size(data,1);
     nlat1 = length(coord[2]); nlat2 = size(data,2);
-    nt = size(data)[3:end]
+    nt = size(data)[3:end];
 
     if ndim == 2; data = data[coord[1],coord[2]];
     elseif ndim >= 3;
@@ -309,7 +317,26 @@ function regionextract(data,coord,ndim)
 
 end
 
-function regionextractpoint(data,plon,plat,lon::Array,lat::Array)
+function regionextract(data::Array{<:Real},coord::Array)
+
+    nlon1 = length(coord[1]); nlon2 = size(data,1);
+    nlat1 = length(coord[2]); nlat2 = size(data,2);
+    nt = size(data)[3:end]; ndim = ndims(data);
+
+    if ndim == 2; data = data[coord[1],coord[2]];
+    elseif ndim >= 3;
+        data = reshape(data,nlon2,nlat2,:);
+        data = data[coord[1],coord[2],:];
+        data = reshape(data,Tuple(vcat(nlon1,nlat1,nt...)));
+    end
+
+end
+
+function regionextractpoint(
+    data::Array{<:Real},
+    plon::Real, plat::Real,
+    lon::Vector{<:Real}, lat::Vector{<:Real}
+)
 
     icoord = regionpoint(plon,plat,lon,lat); ndim = ndims(data)
 
@@ -321,9 +348,9 @@ function regionextractpoint(data,plon,plat,lon::Array,lat::Array)
 end
 
 function regionextractgrid(
-    data::Array{Real},
-    reg, lon::Array{Real,1}, lat::Array{Real,1},
-    tmp::Array{Real}
+    data::Array{<:Real},
+    reg, lon::Vector{<:Real}, lat::Vector{<:Real},
+    tmp::Array{<:Real}
 )
 
     @debug "$(Dates.now()) - Determining indices of longitude and latitude boundaries in parent dataset ..."
@@ -344,6 +371,22 @@ function regionextractgrid(
 
     @info "$(Dates.now()) - Extracting data for the $(regionfullname(reg)) region from global datasets ..."
     rdata = regionextract(tmp,[iWE,iNS],ndim)
+
+    return rdata
+
+end
+
+function regionextractgrid(
+    data::Array{<:Real},
+    reginfo::Dict, lon::Vector{<:Real}, lat::Vector{<:Real},
+    tmp::Array{<:Real}
+)
+
+    iW = reginfo["boundsID"][4]; iE = reginfo["boundsID"][3];
+
+    if iW > iE; circshift!(tmp,data,1-iW); end
+
+    rdata = regionextract(tmp,reginfo["IDvec"])
 
     return rdata
 
