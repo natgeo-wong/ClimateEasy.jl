@@ -29,12 +29,12 @@ export
        regionload, regioninfodisplay, regionshortname, regionfullname, regionparent,
        regionbounds, regionpoint, regiongrid, regionisglobe,
        ispointinregion, isgridinregion,
-       regionextract, regionextractpoint, regionextractgrid,
+       regiongridvec, regionextract, regionextractpoint, regionextractgrid,
        from0360to180, from180to0360,
        convert2hourly, convert23hourly, convert2daily,
        convert2regionmean, convert2zonalmean, convert2meridionalmean,
        mollweide, robinson, coastlines,
-       h4read, nanop
+       h4read, nanop, real2int16!
 
 include("datetime.jl")
 include("regions.jl")
@@ -42,5 +42,6 @@ include("processing.jl")
 include("hdf4.jl")
 include("mapping.jl")
 include("misc.jl")
+include("real2int.jl")
 
 end # module
