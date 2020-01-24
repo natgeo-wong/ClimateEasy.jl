@@ -6,12 +6,17 @@ computer memory
 """
 
 function real2int16!(
-    outarray::Array{Int16}, inarray::Array{Real};
+    outarray::Array{Int16}, inarray::Array{<:Real};
     offset::Real, scale::Real
 )
 
     if size(outarray) != size(inarray)
-        error("$(Dates.now()) - output array is not of the same size as the input array")
+        dout = [i for i in size(outarray)];
+        din  = [i for i in size(inarray)];
+        if (dout[1:end-1] != din[1:end] && dout[1:end] != din[1:end-1]) ||
+            prod(dout) != prod(din)
+            error("$(Dates.now()) - output array is not of the same size as the input array")
+        end
     end
 
     for ii = 1 : length(inarray)
@@ -21,7 +26,7 @@ function real2int16!(
         if inarray[ii] < -32567; inarray[ii] = -32568
         elseif inarray[ii] > 32567; inarray[ii] = -32568
         end
-        
+
         outarray[ii] = round(Int16,inarray[ii])
 
     end
