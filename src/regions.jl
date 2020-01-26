@@ -259,12 +259,16 @@ function regiongridvec(reg,lon::Vector{<:Real},lat::Vector{<:Real})
     @debug "$(Dates.now()) - Creating vector of latitude indices to extract ..."
     if     iN < iS; iNS = iN : iS
     elseif iS < iN; iNS = iS : iN
+    else;           iNS = iN;
     end
 
     @debug "$(Dates.now()) - Creating vector of longitude indices to extract ..."
     if     iW < iE; iWE = iW : iE
-    elseif iW > iE; iWE = 1 : (iE + length(lon) - iW);
+    elseif iW > iE || (iW == iE && bounds[3] != bounds[4])
+        iWE = 1 : (iE + length(lon) - iW);
         lon[1:(iW-1)] = lon[1:(iW-1)] .+ 360; lon = circshift(lon,1-iW);
+    else
+        iWE = iW;
     end
 
     reginfo = Dict("boundsID"=>igrid,"IDvec"=>[iWE,iNS],"fullname"=>regionfullname(reg))
@@ -315,6 +319,8 @@ function regionextract(data::Array{<:Real},coord::Array,ndim::Integer)
         data = reshape(data,Tuple(vcat(nlon1,nlat1,nt...)));
     end
 
+    return data
+
 end
 
 function regionextract(data::Array{<:Real},coord::Array)
@@ -329,6 +335,8 @@ function regionextract(data::Array{<:Real},coord::Array)
         data = data[coord[1],coord[2],:];
         data = reshape(data,Tuple(vcat(nlon1,nlat1,nt...)));
     end
+
+    return data
 
 end
 
@@ -365,12 +373,17 @@ function regionextractgrid(
 
     @debug "$(Dates.now()) - Creating vector of longitude indices to extract ..."
     if     iW < iE; iWE = iW : iE
-    elseif iW > iE; iWE = 1 : (iE + nlon - iW);
-        circshift!(tmp,data,1-iW);
-    end
 
-    @info "$(Dates.now()) - Extracting data for the $(regionfullname(reg)) region from global datasets ..."
-    rdata = regionextract(tmp,[iWE,iNS],ndim)
+        @info "$(Dates.now()) - Extracting data for the $(regionfullname(reg)) region from global datasets ..."
+        rdata = regionextract(data,[iWE,iNS],ndim)
+
+    elseif iW > iE; iWE = 1 : (iE + nlon - iW);
+
+        circshift!(tmp,data,1-iW);
+        @info "$(Dates.now()) - Extracting data for the $(regionfullname(reg)) region from global datasets ..."
+        rdata = regionextract(tmp,[iWE,iNS],ndim)
+
+    end
 
     return rdata
 
@@ -384,9 +397,10 @@ function regionextractgrid(
 
     iW = reginfo["boundsID"][4]; iE = reginfo["boundsID"][3];
 
-    if iW > iE; circshift!(tmp,data,1-iW); end
-
-    rdata = regionextract(tmp,reginfo["IDvec"])
+    if iW > iE; circshift!(tmp,data,1-iW);
+          rdata = regionextract(tmp,reginfo["IDvec"]);
+    else; rdata = regionextract(data,reginfo["IDvec"]);
+    end
 
     return rdata
 
