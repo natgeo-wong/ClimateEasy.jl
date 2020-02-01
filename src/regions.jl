@@ -277,6 +277,32 @@ function regiongridvec(reg,lon::Vector{<:Real},lat::Vector{<:Real})
 
 end
 
+function regiongridvec(bounds::Array{<:Real,1},lon::Vector{<:Real},lat::Vector{<:Real})
+
+    @debug "$(Dates.now()) - Determining indices of longitude and latitude boundaries in parent dataset ..."
+    iN,iS,iE,iW = regiongrid(bounds,lon,lat);
+
+    @debug "$(Dates.now()) - Creating vector of latitude indices to extract ..."
+    if     iN < iS; iNS = iN : iS
+    elseif iS < iN; iNS = iS : iN
+    else;           iNS = iN;
+    end
+
+    @debug "$(Dates.now()) - Creating vector of longitude indices to extract ..."
+    if     iW < iE; iWE = iW : iE
+    elseif iW > iE || (iW == iE && bounds[3] != bounds[4])
+        iWE = 1 : (iE + length(lon) - iW);
+        lon[1:(iW-1)] = lon[1:(iW-1)] .+ 360; lon = circshift(lon,1-iW);
+    else
+        iWE = iW;
+    end
+
+    reginfo = Dict("boundsID"=>igrid,"IDvec"=>[iWE,iNS],"fullname"=>regionfullname(reg))
+
+    return lon[iWE],lat[iNS],reginfo
+
+end
+
 # Tranformation of Coordinates
 
 function from180to0360(lon::Vector{<:Real})
