@@ -280,7 +280,7 @@ end
 function regiongridvec(bounds::Array{<:Real,1},lon::Vector{<:Real},lat::Vector{<:Real})
 
     @debug "$(Dates.now()) - Determining indices of longitude and latitude boundaries in parent dataset ..."
-    iN,iS,iE,iW = regiongrid(bounds,lon,lat);
+    igrid = regiongrid(bounds,lon,lat); iN,iS,iE,iW = regiongrid(bounds,lon,lat);
 
     @debug "$(Dates.now()) - Creating vector of latitude indices to extract ..."
     if     iN < iS; iNS = iN : iS
@@ -297,7 +297,7 @@ function regiongridvec(bounds::Array{<:Real,1},lon::Vector{<:Real},lat::Vector{<
         iWE = iW;
     end
 
-    reginfo = Dict("boundsID"=>igrid,"IDvec"=>[iWE,iNS],"fullname"=>regionfullname(reg))
+    reginfo = Dict("boundsID"=>igrid,"IDvec"=>[iWE,iNS]);
 
     return lon[iWE],lat[iNS],reginfo
 
