@@ -23,8 +23,8 @@ function real2int16!(
 
         inarray[ii] = (inarray[ii] - offset) / scale
 
-        if inarray[ii] < -32567; inarray[ii] = -32568
-        elseif inarray[ii] > 32567; inarray[ii] = -32568
+        if inarray[ii] < -32767; inarray[ii] = -32768
+        elseif inarray[ii] > 32767; inarray[ii] = -32768
         end
 
         outarray[ii] = round(Int16,inarray[ii])
