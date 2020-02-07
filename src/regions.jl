@@ -241,8 +241,11 @@ function regiongrid(bounds::Array,lon::Vector{<:Real},lat::Vector{<:Real})
 
     E = mod(E,360); W = mod(W,360); lon = mod.(lon,360);
     iN = argmin(abs.(lat.-N)); iS = argmin(abs.(lat.-S)); iW = argmin(abs.(lon.-W));
-    if bounds[3] == bounds[4]
-          if iW != 1; iE = iW - 1; else; iE = length(lon); end
+    if E == W;
+        if bounds[3] != bounds[4]
+              if iW != 1; iE = iW - 1; else; iE = length(lon); end
+        else; iE = iW
+        end
     else; iE = argmin(abs.(lon.-E)); iW = argmin(abs.(lon.-W));
     end
 
@@ -265,7 +268,7 @@ function regiongridvec(reg,lon::Vector{<:Real},lat::Vector{<:Real})
     @debug "$(Dates.now()) - Creating vector of longitude indices to extract ..."
     if     iW < iE; iWE = iW : iE
     elseif iW > iE || (iW == iE && bounds[3] != bounds[4])
-        iWE = 1 : (iE + length(lon) - iW);
+        iWE = 1 : (iE + length(lon) + 1 - iW);
         lon[1:(iW-1)] = lon[1:(iW-1)] .+ 360; lon = circshift(lon,1-iW);
     else
         iWE = iW;
@@ -291,7 +294,7 @@ function regiongridvec(bounds::Array{<:Real,1},lon::Vector{<:Real},lat::Vector{<
     @debug "$(Dates.now()) - Creating vector of longitude indices to extract ..."
     if     iW < iE; iWE = iW : iE
     elseif iW > iE || (iW == iE && bounds[3] != bounds[4])
-        iWE = 1 : (iE + length(lon) - iW);
+        iWE = 1 : (iE + length(lon) + 1 - iW);
         lon[1:(iW-1)] = lon[1:(iW-1)] .+ 360; lon = circshift(lon,1-iW);
     else
         iWE = iW;
@@ -403,7 +406,7 @@ function regionextractgrid(
         @info "$(Dates.now()) - Extracting data for the $(regionfullname(reg)) region from global datasets ..."
         rdata = regionextract(data,[iWE,iNS],ndim)
 
-    elseif iW > iE; iWE = 1 : (iE + nlon - iW);
+    elseif iW > iE; iWE = 1 : (iE + nlon + 1 - iW);
 
         circshift!(tmp,data,1-iW);
         @info "$(Dates.now()) - Extracting data for the $(regionfullname(reg)) region from global datasets ..."
