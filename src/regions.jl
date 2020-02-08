@@ -13,7 +13,16 @@ There are three major types of functions contained in this .jl module:
 
 # Region Information and Attributes
 
-function regionload()
+function regioncopy()
+    ftem = joinpath(@__DIR__,"regionstemplate.txt")
+    freg = joinpath(@__DIR__,"regions.txt")
+    if !isfile(freg)
+        @debug "$(Dates.now()) - Unable to find regions.txt, copying data from regionstemplate.txt ..."
+        cp(ftem,freg,force=true);
+    end
+end
+
+function regioninfoload()
     @debug "$(Dates.now()) - Loading information on possible regions ..."
     return readdlm(joinpath(@__DIR__,"regions.txt"),',',comments=true);
 end
@@ -23,10 +32,36 @@ function regioninfodisplay(regioninfo::AbstractArray)
     for ii = 1 : size(regioninfo,1); @info "$(Dates.now()) - $(ii)) $(regioninfo[ii,7])" end
 end
 
+function regioninfoall()
+    @info "$(Dates.now()) - The following regions and their properties are offered in the ClimateEasy.jl"
+
+    rinfo = regioninfoload(); head = ["ID","Parent","N","W","S","E","Full Name"];
+    pretty_table(rinfo,head,alignment=:c);
+end
+
+function regioninfoadd(;
+    ID::AbstractString,parent::AbstractString,
+    N::Integer,S::Integer,E::Integer,W::Integer,
+    name::AbstractString
+)
+
+    freg = joinpath(@__DIR__,"regions.txt"); rinfo = regioninfoload();
+    regID = rinfo[:,1]; regparent = rinfo[:,2]; regname = rinfo[:,7];
+
+    if sum(regID.==ID) > 0
+        error("$(Dates.now()) - Region ID already exists.  Please choose a new ID.")
+    end
+
+    open(freg,"a") do io
+        writedlm(io,[ID parent N S E W name],',')
+    end
+
+end
+
 # Find Regions Bounds
 
 function regionbounds(reg::AbstractString)
-    reginfo = regionload(); regions = reginfo[:,1]; regid = (regions .== reg);
+    reginfo = regioninfoload(); regions = reginfo[:,1]; regid = (regions .== reg);
     N,S,E,W = reginfo[regid,[3,5,6,4]];
     @debug "$(Dates.now()) - The bounds of the region are, in [N,S,E,W] format, [$(N),$(S),$(E),$(W)]."
     return [N,S,E,W]
@@ -40,7 +75,7 @@ function regionbounds(reg::AbstractString,reginfo::AbstractArray)
 end
 
 function regionbounds(regID::Integer)
-    reginfo = regionload();
+    reginfo = regioninfoload();
     N,S,E,W = reginfo[regID,[3,5,6,4]];
     @debug "$(Dates.now()) - The bounds of the region are, in [N,S,E,W] format, [$(N),$(S),$(E),$(W)]."
     return [N,S,E,W]
@@ -55,7 +90,7 @@ end
 # Find Short Region Name
 
 function regionshortname(regID::Integer)
-    reginfo = regionload(); return reginfo[regID,1];
+    reginfo = regioninfoload(); return reginfo[regID,1];
 end
 
 function regionshortname(regID::Integer,reginfo::AbstractArray)
@@ -65,7 +100,7 @@ end
 # Find Full Region Name
 
 function regionfullname(reg::AbstractString)
-    reginfo = regionload(); regions = reginfo[:,1]; regid = (regions .== reg);
+    reginfo = regioninfoload(); regions = reginfo[:,1]; regid = (regions .== reg);
     return reginfo[regid,7][1];
 end
 
@@ -75,7 +110,7 @@ function regionfullname(reg::AbstractString,reginfo::AbstractArray)
 end
 
 function regionfullname(regID::Integer)
-    reginfo = regionload(); return reginfo[regID,7];
+    reginfo = regioninfoload(); return reginfo[regID,7];
 end
 
 function regionfullname(regID::Integer,reginfo::AbstractArray)
@@ -85,7 +120,7 @@ end
 # Find Region Parent
 
 function regionparent(reg::AbstractString)
-    reginfo = regionload(); regions = reginfo[:,1]; regid = (regions .== reg);
+    reginfo = regioninfoload(); regions = reginfo[:,1]; regid = (regions .== reg);
     return reginfo[regid,2][1];
 end
 
@@ -95,7 +130,7 @@ function regionparent(reg::AbstractString,reginfo::AbstractArray)
 end
 
 function regionparent(regID::Integer)
-    reginfo = regionload(); return reginfo[regID,2];
+    reginfo = regioninfoload(); return reginfo[regID,2];
 end
 
 function regionparent(regID::Integer,reginfo::AbstractArray)
@@ -105,7 +140,7 @@ end
 # Find if the Region is Global
 
 function regionisglobe(reg::AbstractString)
-    reginfo = regionload(); regions = reginfo[:,1]; regid = (regions .== reg);
+    reginfo = regioninfoload(); regions = reginfo[:,1]; regid = (regions .== reg);
     if regid == 1; return true; else; return false end
 end
 

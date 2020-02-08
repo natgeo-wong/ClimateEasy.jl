@@ -10,6 +10,7 @@ module ClimateEasy
 
 ## Modules Used
 using Dates, DelimitedFiles, Printf, Statistics
+using PrettyTables
 using PyCall, PyPlot
 
 ## Adding relevant Python Functions
@@ -26,7 +27,8 @@ export
        yr2str, mo2str, dy2str, hr2str, mi2str, yrmo2str, ymd2str, ymdhm2str,
        yrmo2dir, ymd2dir, yrdy2dir,
        dntsea2mon,
-       regionload, regioninfodisplay, regionshortname, regionfullname, regionparent,
+       regioninfoload, regioninfodisplay, regioninfoall, regioninfoadd,
+       regionshortname, regionfullname, regionparent,
        regionbounds, regionpoint, regiongrid, regionisglobe,
        ispointinregion, isgridinregion,
        regiongridvec, regionextract, regionextractpoint, regionextractgrid,
