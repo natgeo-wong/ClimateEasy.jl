@@ -24,7 +24,7 @@ end
 
 function regioninfoload()
     @debug "$(Dates.now()) - Loading information on possible regions ..."
-    return readdlm(joinpath(@__DIR__,"regions.txt"),',',comments=true);
+    regioncopy(); return readdlm(joinpath(@__DIR__,"regions.txt"),',',comments=true);
 end
 
 function regioninfodisplay(regioninfo::AbstractArray)
