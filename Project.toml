@@ -13,6 +13,7 @@ PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
+PrettyTables = "0.8"
 PyCall = "1.90"
 PyPlot = "2.8"
 julia = "1"
