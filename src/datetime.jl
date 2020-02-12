@@ -14,25 +14,16 @@ There following types of functions are contained in this .jl module:
 """
 
 # Single-Unit String Functions
-function yr2str(dnt::TimeType)
-    return @sprintf("%04d",Dates.year(dnt));
-end
+yr2str(dnt::TimeType) = @sprintf("%04d",Dates.year(dnt))
+mo2str(dnt::TimeType) = @sprintf("%02d",Dates.month(dnt))
+dy2str(dnt::TimeType) = @sprintf("%02d",Dates.day(dnt))
+hr2str(dnt::TimeType) = @sprintf("%02d",Dates.hour(dnt))
+mi2str(dnt::TimeType) = @sprintf("%02d",Dates.minute(dnt))
 
-function mo2str(dnt::TimeType)
-    return @sprintf("%02d",Dates.month(dnt));
-end
-
-function dy2str(dnt::TimeType)
-    return @sprintf("%02d",Dates.day(dnt));
-end
-
-function hr2str(dnt::TimeType)
-    return @sprintf("%02d",Dates.hour(dnt));
-end
-
-function mi2str(dnt::TimeType)
-    return @sprintf("%02d",Dates.minute(dnt));
-end
+mo2str(mo::Integer) = @sprintf("%02d",mo)
+dy2str(dy::Integer) = @sprintf("%02d",dy)
+hr2str(hr::Integer) = @sprintf("%02d",hr)
+mi2str(mi::Integer) = @sprintf("%02d",mi)
 
 # Multi-Unit String Functions
 function yrmo2str(dnt::TimeType)
@@ -51,6 +42,13 @@ function ymdhm2str(dnt::TimeType)
     return @sprintf("%04d%02d%02d%02d%02d00",yr,mo,dy,hr,mi);
 end
 
+yrmo2str(yr::Integer,mo::Integer) = @sprintf("%04d%02d",yr,mo)
+ymd2str(yr::Integer,mo::Integer,dy::Integer) = @sprintf("%04d%02d%02d",yr,mo,dy)
+
+function ymdhm2str(yr::Integer,mo::Integer,dy::Integer,hr::Integer,mi::Integer)
+    return @sprintf("%04d%02d%02d%02d%02d",yr,mo,dy,hr,mi)
+end
+
 # Directory String Functions
 function yrmo2dir(dnt::TimeType)
     yr = Dates.year(dnt); mo = Dates.month(dnt);
@@ -64,8 +62,12 @@ end
 
 function yrdy2dir(dnt::TimeType)
     yr = Dates.year(dnt); dy = Dates.dayofyear(dnt);
-    return @sprintf("%04d/%02d",yr,dy);
+    return @sprintf("%04d/%03d",yr,dy);
 end
+
+yrmo2dir(yr::Integer,mo::Integer) = @sprintf("%04d/%02d",yr,mo)
+ymd2dir(yr::Integer,mo::Integer,dy::Integer) = @sprintf("%04d/%02d/%02d",yr,mo,dy)
+yrdy2dir(yr::Integer,ndy::Integer) = @sprintf("%04d/%03d",yr,ndy);
 
 # Convert Season to Months
 
