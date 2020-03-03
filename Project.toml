@@ -1,22 +1,7 @@
 name = "ClimateEasy"
 uuid = "47ceb0c8-0fe6-4c49-a4a1-92bc59187c00"
 authors = ["Nathanael Wong <natgeo.wong@outlook.com>"]
-version = "0.2.7"
-
-[deps]
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
-PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
-Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
-PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
-PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
-Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-
-[compat]
-PrettyTables = "0.8"
-PyCall = "1.90"
-PyPlot = "2.8"
-julia = "1"
+version = "0.3.0"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
