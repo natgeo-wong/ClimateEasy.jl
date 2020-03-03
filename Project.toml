@@ -3,6 +3,9 @@ uuid = "47ceb0c8-0fe6-4c49-a4a1-92bc59187c00"
 authors = ["Nathanael Wong <natgeo.wong@outlook.com>"]
 version = "0.3.0"
 
+[deps]
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
