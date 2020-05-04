@@ -1,10 +1,11 @@
 name = "ClimateEasy"
 uuid = "47ceb0c8-0fe6-4c49-a4a1-92bc59187c00"
 authors = ["Nathanael Wong <natgeo.wong@outlook.com>"]
-version = "0.3.0"
+version = "0.3.1"
 
 [deps]
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [compat]
 julia = "1"
